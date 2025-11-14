@@ -1,70 +1,72 @@
+<?php
+require_once __DIR__ . '/auth.php';
+try_remember_login();
+if (!is_logged_in()) {
+    header('Location: login.php');
+    exit;
+}
+enforce_session_timeout(1800);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tools_Library</title>
+<meta charset="UTF-8">
+<title>Tools Library</title>
 </head>
-<style>
-        #tool{
-            width: 50%;
-            margin-left: 25%;
-            background-color: rgba(76, 104, 243, 1); 
-            border-radius: 10px;
-            border-radius: 7%;
-        }
-        form{
-           
-            text-overflow: clip;
-             text-align: center;
-             align-items: center;
-            
-        }
-        body{
-            background-color: rgba(85, 175, 244, 1);
-        }
-        h1{
-            text-align: center;
-        }
-     </style>
 <body>
-    
-  
-    <h1>Tools_Library Form</h1>
-   <fieldset id="tool"><form action="" method="POST" > 
-    Tool Name:       <input type="text" name="name" placeholder="Tool Name"><br><br>
-    Tool Category:   <input type="text" name="category" placeholder="Tool Category"><br><br>
-    Tool Description:<input type="text" name="description" placeholder="Tool Description"><br><br>
-    condition:  <select name="condition">
-                    <option value="new">New</option>
-                    <option value="good">Good</option>
-                    <option value="fair">Fair</option>
-                    <option value="poor">Poor</option>  
-                    </select><br><br>
-        <input type="submit" name="submit" value="Add Tool">
-    </form><br>
-        <form action="read.php"> <button type="submit" name="view">View tool</button></form> <br>
-        <form action="delete.php"> <button type="submit" name="Delete">DELETE</button></form> <br>
-        <form action="update.php"> <button type="submit" name="update">UPDATE</button></form>
-    </fieldset> 
-    <?php 
-    if(isset($_POST['submit'])){    
-        $name=$_POST['name'];
-        $category=$_POST['category'];
-        $description=$_POST['description'];
-        $condition=$_POST['condition'];
-
-        $conn=new mysqli('localhost','root','','tool_library');
-        $query=mysqli_query($conn,"INSERT INTO tools(name,category,description,`condition`) VALUES('$name','$category','$description','$condition')");
-
-        if($query){
-            echo "Tool added successfully!";
-        } else {
-            echo "Error adding tool: " . mysqli_error($conn);
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #9ddafdff;
+            align-items: center;
+            margin-left:35%;
+            margin-top:10%;
         }
-        
-    }
-    
-?>
+        fieldset{
+           width: 60%;
+        }
+        button {
+            background-color: #4868f3;
+            color: white;
+            padding: 10px 20px;
+            border: 1px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+<h1>Tools Library</h1>
+<fieldset>
+<button><a href="logout.php">Logout</a><br><br></button><br><br>
+
+<form method="POST">
+    Name: <input type="text" name="name"><br>
+    Category: <input type="text" name="category"><br>
+    Description: <input type="text" name="description"><br>
+    Condition: <select name="condition">
+        <option value="new">New</option>
+        <option value="good">Good</option>
+        <option value="fair">Fair</option>
+        <option value="poor">Poor</option>
+    </select><br><br>
+    <button type="submit" name="add">Add Tool</button>
+</form>
+
+<?php
+if (isset($_POST['add'])) {
+    $name = $_POST['name'];
+    $category = $_POST['category'];
+    $description = $_POST['description'];
+    $condition = $_POST['condition'];
+
+    $stmt = $mysqli->prepare("INSERT INTO tools(name, category, description, `condition`) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param('ssss', $name, $category, $description, $condition);
+    $stmt->execute();
+
+    echo "Tool added successfully!";
+}
+?><br>
+<button><br><a href="read.php">View Tools</a></button>
+</fieldset>
 </body>
 </html>
